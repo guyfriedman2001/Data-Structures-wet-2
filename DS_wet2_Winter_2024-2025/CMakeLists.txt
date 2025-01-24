@@ -15,4 +15,5 @@ add_executable(DS_wet2_Winter_2024_2025
         Deque.cpp
         DeQueNode.h
         Pair.h
-        ChainHashArray.h)
+        ChainHashArray.h
+        GuysUtil.h)

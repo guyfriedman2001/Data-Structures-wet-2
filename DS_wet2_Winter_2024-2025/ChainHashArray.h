@@ -31,6 +31,13 @@ public:
         this->updateCapacity();
     }
 
+    ChainHashArray(int size) {
+        data_arr = new DeQue<T>[size];
+        arr_size = size;
+        ammount_of_items = EMPTY;
+        this->updateCapacity();
+    }
+
     ~ChainHashArray() {
         delete[] data_arr;
     }
@@ -71,6 +78,28 @@ public:
             return;
         }
         this->resize(HALF_OF(this->arr_size));
+    }
+
+    template <typename K>
+    void swap(K& item_1, K& item_2) {
+        K* temp = item_1;
+        item_1 = item_2;
+        item_2 = temp;
+    }
+
+    void SwapData(ChainHashArray* other) { //fixme
+        assert(other != nullptr);
+        //if (other == nullptr) {throw "Null pointer provided -> Dynamic array -> SwapInfo";}
+        swap<T*>(this->data, other->data);
+        swap<int>(this->size, other->size);
+        swap<int>(this->fill_percent, other->fill_percent);
+    }
+
+    operator =(ChainHashArray other) {
+        if (this == &other) {
+            return;
+        }
+
     }
 };
 
