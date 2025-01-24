@@ -32,8 +32,8 @@ public:
     }
 
     ChainHashArray(int size) {
-        data_arr = new DeQue<T>[size];
-        arr_size = size;
+        data_arr = new DeQue<T>[MAX(INITIAL_SIZE,size)];
+        arr_size = MAX(INITIAL_SIZE,size);
         ammount_of_items = EMPTY;
         this->updateCapacity();
     }
@@ -66,7 +66,7 @@ public:
     }
 
     void resize(int new_capacity) {
-        ChainHashArray* other = new ChainHashArray(new_capacity);
+        auto other = new ChainHashArray(new_capacity);
         for (int i = 0; i < this->arr_size; i++) {
             DeQue<T>* temp = (this->data_arr)[i];
             int tempSize = temp->getSize();
@@ -97,15 +97,16 @@ public:
         item_2 = temp;
     }
 
-    void swapData(ChainHashArray* other) { //fixme
+    void swapData(ChainHashArray* other) {
         assert(other != nullptr);
         //todo
     }
 
-    operator =(ChainHashArray other) {
+    ChainHashArray& operator =(ChainHashArray other) {
         if (this == &other) {
-            return;
+            return *this;
         }
+        return *this;
 
     }
 
