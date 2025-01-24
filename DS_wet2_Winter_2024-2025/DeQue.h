@@ -56,6 +56,18 @@ public:
         return node->getData();
     }
 
+    T* remove(T* item) {
+        DeQueNode<T>* temp = this->head->remove(item);
+        if (temp == nullptr) {
+            return nullptr;
+        }
+        T* newTemp = temp->getData();
+        temp->nullify();
+        delete temp;
+        --this->size;
+        return newTemp;
+    }
+
 };
 
 

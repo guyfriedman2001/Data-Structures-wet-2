@@ -5,6 +5,7 @@
 #ifndef CHAINHASHARRAY_H
 #define CHAINHASHARRAY_H
 #include "DeQue.h"
+#include "Pair.h"
 #include <cassert>
 constexpr int MAX_FILL_RATIO = 10;
 constexpr int INITIAL_SIZE = 16;
@@ -18,42 +19,72 @@ constexpr int INITIAL_SIZE = 16;
 template<class T>
 class ChainHashArray {
 private:
-    DeQue<T>* data_arr;
+    DeQue<Pair<T>>* data_arr;
     int arr_size;
     int ammount_of_items;
     int capacity;
 public:
 
     ChainHashArray() {
-        data_arr = new DeQue<T>[INITIAL_SIZE];
+        data_arr = new DeQue<Pair<T>>[INITIAL_SIZE];
         arr_size = INITIAL_SIZE;
         ammount_of_items = EMPTY;
         this->updateCapacity();
     }
 
-    ChainHashArray(int size) {
-        data_arr = new DeQue<T>[MAX(INITIAL_SIZE,size)];
-        arr_size = MAX(INITIAL_SIZE,size);
-        ammount_of_items = EMPTY;
-        this->updateCapacity();
-    }
+
 
     ~ChainHashArray() {
         delete[] data_arr;
     }
 
-    void updateCapacity() {
-        capacity = this->arr_size * MAX_FILL_RATIO;
+    void insert(int key, T* value) {
+        this->insert(value, key);
     }
 
-    void insert(T item, int index) {
+
+    void insert(T* item, int index) {
         int insertionIndex = this->calcIndex(index);
         this->data_arr[insertionIndex].insert(item);
         ++this->ammount_of_items;
     }
 
-    int calcIndex(int index) {
-        return index % this->arr_size;
+    T* find(int key) {
+        int index = this->calcIndex(key);
+        auto toFind = this->data_arr[index].find(key);
+        return toFind == nullptr ? nullptr : toFind->value;
+    }
+
+    T* remove(int key) {
+        int index = this->calcIndex(key);
+        Pair<T>* toFind = (this->data_arr[index])->remove(key);
+        if (toFind == nullptr) {
+            return nullptr;
+        }
+        T* value = toFind->extract();
+        --this->ammount_of_items;
+        return value;
+    }
+
+protected:
+
+    ChainHashArray(int size) {
+        data_arr = new DeQue<Pair<T>>[MAX(INITIAL_SIZE,size)];
+        arr_size = MAX(INITIAL_SIZE,size);
+        ammount_of_items = EMPTY;
+        this->updateCapacity();
+    }
+
+
+
+    void updateCapacity() {
+        capacity = this->arr_size * MAX_FILL_RATIO;
+    }
+
+
+
+    int calcIndex(int key) {
+        return key % this->arr_size;
     }
 
     void checkUpdateArr() {

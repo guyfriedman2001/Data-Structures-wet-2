@@ -54,6 +54,8 @@ public:
     }
 
     void deCouple() {
+        this->next->prev = this->prev;
+        this->prev->next = this->next;
         this->next = this->prev = nullptr;
     }
 
@@ -73,8 +75,6 @@ public:
         assert(this->hasNext());
         assert(this->next != nullptr && this->next->next != nullptr);
         DeQueNode<T>* temp = this->next;
-        this->next = temp->next;
-        temp->next->prev = this;
         temp->deCouple();
         return temp;
     }
@@ -116,6 +116,17 @@ public:
             return nullptr;
         }
         if (this->data == toFind) {
+            return this;
+        }
+        return this->next->find(toFind);
+    }
+
+    DeQueNode<T>* remove(T* toFind) {
+        if(this->isTail()) {
+            return nullptr;
+        }
+        if (this->data == toFind) {
+            this->deCouple();
             return this;
         }
         return this->next->find(toFind);
