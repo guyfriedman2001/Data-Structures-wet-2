@@ -66,7 +66,17 @@ public:
     }
 
     void resize(int new_capacity) {
-        //todo
+        ChainHashArray* other = new ChainHashArray(new_capacity);
+        for (int i = 0; i < this->arr_size; i++) {
+            DeQue<T>* temp = (this->data_arr)[i];
+            int tempSize = temp->getSize();
+            for (int j = 0; j < tempSize; j++) {
+                T* tempItem = temp->pop(j);
+                other->insert(tempItem); //todo - refactor code to work with DeQue<Pair<T>>
+            }
+        }
+        this->swapData(other);
+        delete other;
     }
 
     void makeBigger() {
@@ -87,12 +97,9 @@ public:
         item_2 = temp;
     }
 
-    void SwapData(ChainHashArray* other) { //fixme
+    void swapData(ChainHashArray* other) { //fixme
         assert(other != nullptr);
-        //if (other == nullptr) {throw "Null pointer provided -> Dynamic array -> SwapInfo";}
-        swap<T*>(this->data, other->data);
-        swap<int>(this->size, other->size);
-        swap<int>(this->fill_percent, other->fill_percent);
+        //todo
     }
 
     operator =(ChainHashArray other) {
@@ -101,6 +108,8 @@ public:
         }
 
     }
+
+    //todo - copy constructor? resize func
 };
 
 
