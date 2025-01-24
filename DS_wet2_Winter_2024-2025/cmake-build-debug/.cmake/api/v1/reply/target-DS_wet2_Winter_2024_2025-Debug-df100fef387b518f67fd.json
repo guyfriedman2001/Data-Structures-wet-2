@@ -112,7 +112,8 @@
 				4,
 				5,
 				7,
-				8
+				8,
+				9
 			]
 		}
 	],
@@ -164,6 +165,11 @@
 		{
 			"backtrace" : 1,
 			"path" : "Pair.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ChainHashArray.h",
 			"sourceGroupIndex" : 1
 		}
 	],
