@@ -25,7 +25,7 @@ private:
     int capacity;
 public:
 
-    ChainHashArray() {
+    ChainHashArray() : capacity(EMPTY) {
         data_arr = new DeQue<Pair<T>>[INITIAL_SIZE];
         arr_size = INITIAL_SIZE;
         amount_of_items = EMPTY;
@@ -67,20 +67,16 @@ public:
 
 protected:
 
-    ChainHashArray(int size) {
+    ChainHashArray(int size)  : capacity(EMPTY) {
         data_arr = new DeQue<Pair<T>>[MAX(INITIAL_SIZE,size)];
         arr_size = MAX(INITIAL_SIZE,size);
         amount_of_items = EMPTY;
         this->updateCapacity();
     }
 
-
-
     void updateCapacity() {
         capacity = this->arr_size * MAX_FILL_RATIO;
     }
-
-
 
     int calcIndex(int key) {
         return key % this->arr_size;
@@ -114,7 +110,7 @@ protected:
     }
 
     void makeSmaller() {
-        if(this->arr_size == INITIAL_SIZE) {
+        if(this->arr_size <= INITIAL_SIZE) {
             return;
         }
         this->resize(HALF_OF(this->arr_size));
@@ -135,6 +131,7 @@ protected:
         swap<DeQue<Pair<T>>*>(other->data_arr, this->data_arr);
     }
 
+    /*
     ChainHashArray& operator =(ChainHashArray other) {
         if (this == &other) {
             return *this; //fixme
@@ -142,8 +139,8 @@ protected:
         return *this;
 
     }
+    */
 
-    //todo - copy constructor? resize func
 };
 
 
