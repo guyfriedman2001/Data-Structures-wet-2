@@ -18,9 +18,33 @@ public:
         this->value = value;
     }
 
+    Pair(int key) {
+        this->key = key;
+        this->value = nullptr;
+    }
+
     Pair() {
         this->key = DEFAULT_KEY;
         this->value = nullptr;
+    }
+
+    ~Pair() {
+        delete this->value;
+    }
+
+    T* extract() {
+        auto value = this->value;
+        this->value = nullptr;
+        return value;
+    }
+
+    void nullify() {
+        this->key = DEFAULT_KEY;
+        this->value = nullptr;
+    }
+
+    bool operator ==(const Pair& other) {
+        return this->key == other.key;
     }
 
 };

@@ -51,6 +51,11 @@ public:
         return temp;
     }
 
+    T* find(T* value) {
+        auto node = this->head->find(value);
+        return node->getData();
+    }
+
 };
 
 

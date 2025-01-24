@@ -111,6 +111,16 @@ public:
         return this->data;
     }
 
+    DeQueNode<T>* find(T* toFind) {
+        if(this->isTail()) {
+            return nullptr;
+        }
+        if (this->data == toFind) {
+            return this;
+        }
+        return this->next->find(toFind);
+    }
+
     //int getKey() {return this->key;}
 
 
