@@ -29,26 +29,26 @@ public:
         return size;
     }
 
-    void append(T* item, int index) {
-        auto newNode = new DeQueNode<T>(item,index);
+    void append(T* item) {
+        auto newNode = new DeQueNode<T>(item);
         this->tail->queueAdd(newNode);
         ++this->size;
     }
 
-    void insert(T* item, int index) {
-        auto newNode = new DeQueNode<T>(item,index);
+    void insert(T* item) {
+        auto newNode = new DeQueNode<T>(item);
         this->head->stackAdd(newNode);
         ++this->size;
     }
 
     T* pop() {
+        assert(this->head->hasNext());
         auto newNode = this->head->popNext();
-        //Pair<T> pair(newNode->getData(), newNode->getKey());
-        T* temp = newNode->getData();
+        T* tempVal = newNode->getData();
         newNode->nullify();
         delete newNode;
         --this->size;
-        return temp;
+        return tempVal;
     }
 
     T* find(T* value) {

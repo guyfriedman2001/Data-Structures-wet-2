@@ -40,7 +40,7 @@ public:
 
     DeQueNode() : data(nullptr), next(nullptr), prev(nullptr) {}
 
-    DeQueNode(T* data, int key) : data(data), next(nullptr), prev(nullptr) {}
+    DeQueNode(T* data) : data(data), next(nullptr), prev(nullptr) {}
 
     ~DeQueNode() {
         delete next;

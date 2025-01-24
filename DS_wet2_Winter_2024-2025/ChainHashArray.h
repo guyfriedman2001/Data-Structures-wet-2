@@ -21,14 +21,14 @@ class ChainHashArray {
 private:
     DeQue<Pair<T>>* data_arr;
     int arr_size;
-    int ammount_of_items;
+    int amount_of_items;
     int capacity;
 public:
 
     ChainHashArray() {
         data_arr = new DeQue<Pair<T>>[INITIAL_SIZE];
         arr_size = INITIAL_SIZE;
-        ammount_of_items = EMPTY;
+        amount_of_items = EMPTY;
         this->updateCapacity();
     }
 
@@ -39,15 +39,14 @@ public:
     }
 
     void insert(int key, T* value) {
-        this->insert(value, key);
+        int insertionIndex = this->calcIndex(key);
+        auto newPair = new Pair<T>(key, value);
+        auto requieredDeQue = this->data_arr[insertionIndex];
+        requieredDeQue.append(newPair);
+        ++this->amount_of_items;
     }
 
 
-    void insert(T* item, int index) {
-        int insertionIndex = this->calcIndex(index);
-        this->data_arr[insertionIndex].insert(item);
-        ++this->ammount_of_items;
-    }
 
     T* find(int key) {
         int index = this->calcIndex(key);
@@ -62,7 +61,7 @@ public:
             return nullptr;
         }
         T* value = toFind->extract();
-        --this->ammount_of_items;
+        --this->amount_of_items;
         return value;
     }
 
@@ -71,7 +70,7 @@ protected:
     ChainHashArray(int size) {
         data_arr = new DeQue<Pair<T>>[MAX(INITIAL_SIZE,size)];
         arr_size = MAX(INITIAL_SIZE,size);
-        ammount_of_items = EMPTY;
+        amount_of_items = EMPTY;
         this->updateCapacity();
     }
 
@@ -88,10 +87,10 @@ protected:
     }
 
     void checkUpdateArr() {
-        if (this->ammount_of_items == this->capacity) {
+        if (this->amount_of_items == this->capacity) {
             this->makeBigger();
         }
-        if (this->ammount_of_items <= QUARTER_OF(this->capacity)) {
+        if (this->amount_of_items <= QUARTER_OF(this->capacity)) {
             this->makeSmaller();
         }
     }
@@ -99,11 +98,11 @@ protected:
     void resize(int new_capacity) {
         auto other = new ChainHashArray(new_capacity);
         for (int i = 0; i < this->arr_size; i++) {
-            DeQue<T>* temp = (this->data_arr)[i];
+            DeQue<Pair<T>>* temp = (this->data_arr)[i];
             int tempSize = temp->getSize();
             for (int j = 0; j < tempSize; j++) {
-                T* tempItem = temp->pop(j);
-                other->insert(tempItem); //todo - refactor code to work with DeQue<Pair<T>>
+                Pair<T>* tempItem = temp->pop();
+                other->append(tempItem->key, tempItem);
             }
         }
         this->swapData(other);
@@ -130,12 +129,15 @@ protected:
 
     void swapData(ChainHashArray* other) {
         assert(other != nullptr);
-        //todo
+        swap<int>(other->arr_size, this->arr_size);
+        swap<int>(other->amount_of_items, this->amount_of_items);
+        swap<int>(other->capacity, this->capacity);
+        swap<DeQue<Pair<T>>*>(other->data_arr, this->data_arr);
     }
 
     ChainHashArray& operator =(ChainHashArray other) {
         if (this == &other) {
-            return *this;
+            return *this; //fixme
         }
         return *this;
 
