@@ -10,4 +10,8 @@ add_executable(DS_wet2_Winter_2024_2025
     plains25a2.cpp
     plains25a2.h
     wet2util.h
-        DynamicArray.h)
+        DynamicArray.h
+        Deque.h
+        Deque.cpp
+        DeQueNode.h
+        Pair.h)

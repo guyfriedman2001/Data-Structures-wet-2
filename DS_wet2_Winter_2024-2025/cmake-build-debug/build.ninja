@@ -63,6 +63,13 @@ build CMakeFiles/DS_wet2_Winter_2024_2025.dir/plains25a2.cpp.o: CXX_COMPILER__DS
   OBJECT_DIR = CMakeFiles/DS_wet2_Winter_2024_2025.dir
   OBJECT_FILE_DIR = CMakeFiles/DS_wet2_Winter_2024_2025.dir
 
+build CMakeFiles/DS_wet2_Winter_2024_2025.dir/Deque.cpp.o: CXX_COMPILER__DS_wet2_Winter_2024_2025_unscanned_Debug /Users/guyfriedman/Documents/Technion/Semester_C_11.2024-02.2025/234218/wet2forgit/Untitled/DS_wet2_Winter_2024-2025/Deque.cpp || cmake_object_order_depends_target_DS_wet2_Winter_2024_2025
+  DEP_FILE = CMakeFiles/DS_wet2_Winter_2024_2025.dir/Deque.cpp.o.d
+  FLAGS = -g -std=gnu++14 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -fcolor-diagnostics
+  INCLUDES = -I/Users/guyfriedman/Documents/Technion/Semester_C_11.2024-02.2025/234218/wet2forgit/Untitled/DS_wet2_Winter_2024-2025/.
+  OBJECT_DIR = CMakeFiles/DS_wet2_Winter_2024_2025.dir
+  OBJECT_FILE_DIR = CMakeFiles/DS_wet2_Winter_2024_2025.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target DS_wet2_Winter_2024_2025
@@ -71,7 +78,7 @@ build CMakeFiles/DS_wet2_Winter_2024_2025.dir/plains25a2.cpp.o: CXX_COMPILER__DS
 #############################################
 # Link the executable DS_wet2_Winter_2024_2025
 
-build DS_wet2_Winter_2024_2025: CXX_EXECUTABLE_LINKER__DS_wet2_Winter_2024_2025_Debug CMakeFiles/DS_wet2_Winter_2024_2025.dir/main.cpp.o CMakeFiles/DS_wet2_Winter_2024_2025.dir/plains25a2.cpp.o
+build DS_wet2_Winter_2024_2025: CXX_EXECUTABLE_LINKER__DS_wet2_Winter_2024_2025_Debug CMakeFiles/DS_wet2_Winter_2024_2025.dir/main.cpp.o CMakeFiles/DS_wet2_Winter_2024_2025.dir/plains25a2.cpp.o CMakeFiles/DS_wet2_Winter_2024_2025.dir/Deque.cpp.o
   FLAGS = -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk
   OBJECT_DIR = CMakeFiles/DS_wet2_Winter_2024_2025.dir
   POST_BUILD = :
