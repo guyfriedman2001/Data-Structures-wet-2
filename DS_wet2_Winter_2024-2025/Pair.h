@@ -5,6 +5,8 @@
 #ifndef PAIR_H
 #define PAIR_H
 
+#include <fstream>
+
 constexpr int DEFAULT_KEY = 0;
 
 template <typename T>
@@ -13,20 +15,15 @@ public:
     int key;
     T* value;
 
-    Pair(int key, T* value) {
-        this->key = key;
+    Pair(int key, T* value) : Pair(key) {
         this->value = value;
     }
 
-    Pair(int key) {
+    Pair(int key) : Pair() {
         this->key = key;
-        this->value = nullptr;
     }
 
-    Pair() {
-        this->key = DEFAULT_KEY;
-        this->value = nullptr;
-    }
+    Pair() : key(DEFAULT_KEY), value(nullptr) {}
 
     ~Pair() {
         delete this->value;
@@ -43,9 +40,32 @@ public:
         this->value = nullptr;
     }
 
-    bool operator ==(const Pair& other) {
+
+    bool operator ==(const Pair& other) const {
         return this->key == other.key;
     }
+
+    // Overloaded operator== as a member function
+    //bool operator==(int otherKey) const {return this->key == otherKey;}
+
+    // Friend operator== (int == Pair<int>)
+    friend bool operator==(int lhs, const Pair& rhs) {
+        return rhs == lhs;
+    }
+
+    // Declare the friend function
+    friend std::ostream& operator<<(std::ostream& os, const Pair& pair) {
+        os << "Key: " << pair.key;
+        os << ", Value: ";
+        if (pair.value) {
+            os << *(pair.value);
+        } else {
+            os << "nullptr";
+        }
+        os << "." << std::endl;
+        return os;
+    }
+
 
 };
 

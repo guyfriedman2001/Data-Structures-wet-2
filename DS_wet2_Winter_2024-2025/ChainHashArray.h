@@ -16,6 +16,18 @@ constexpr int INITIAL_SIZE = 16;
 #define QUARTER_OF(a) (a*0.5)
 #define EMPTY (0)
 
+
+//todo remove for mivnei
+#include <fstream>
+#include <iostream>
+using std::cout;
+using std::ostream;
+using std::endl;
+
+//todo remove for mivnei
+
+
+
 template<class T>
 class ChainHashArray {
 private:
@@ -23,16 +35,16 @@ private:
     int arr_size;
     int amount_of_items;
     int capacity;
+
 public:
 
     ChainHashArray() : capacity(EMPTY) {
-        data_arr = new DeQue<Pair<T>>[INITIAL_SIZE];
-        arr_size = INITIAL_SIZE;
-        amount_of_items = EMPTY;
+        this->data_arr = nullptr;
+        this->arr_size = INITIAL_SIZE;
+        this->amount_of_items = EMPTY;
         this->updateCapacity();
+        this->initializeArray();
     }
-
-
 
     ~ChainHashArray() {
         delete[] data_arr;
@@ -40,23 +52,25 @@ public:
 
     void insert(int key, T* value) {
         int insertionIndex = this->calcIndex(key);
-        auto newPair = new Pair<T>(key, value);
-        auto requieredDeQue = this->data_arr[insertionIndex];
-        requieredDeQue.append(newPair);
+        DeQue<Pair<T>>& desiredSlot = this->data_arr[insertionIndex];
+        Pair<T>* newItem = new Pair<T>(key, value);
+        desiredSlot.append(newItem);
         ++this->amount_of_items;
     }
 
-
-
     T* find(int key) {
         int index = this->calcIndex(key);
-        auto toFind = this->data_arr[index].find(key);
+        Pair<T>* temp = new Pair<T>(key);
+        Pair<T>* toFind = this->data_arr[index].find(temp);
+        delete temp;
         return toFind == nullptr ? nullptr : toFind->value;
     }
 
     T* remove(int key) {
         int index = this->calcIndex(key);
-        Pair<T>* toFind = (this->data_arr[index])->remove(key);
+        DeQue<Pair<T>>* toRemove = &(this->data_arr[index]);
+        Pair<T>* toRemovePair = new Pair<T>(key);
+        Pair<T>* toFind = toRemove->remove(toRemovePair); //fixme
         if (toFind == nullptr) {
             return nullptr;
         }
@@ -67,11 +81,21 @@ public:
 
 protected:
 
+    void initializeArray() {
+        this->data_arr = new DeQue<Pair<T>>[this->arr_size];
+        for (int i = 0; i < this->arr_size; ++i) {
+            //this->data_arr[i] = *(new DeQue<Pair<T>>()); //fixme
+            DeQue<Pair<T>>& desiredSlot = this->data_arr[i];
+            desiredSlot.verifyInitialisation();
+        }
+    }
+
     ChainHashArray(int size)  : capacity(EMPTY) {
-        data_arr = new DeQue<Pair<T>>[MAX(INITIAL_SIZE,size)];
-        arr_size = MAX(INITIAL_SIZE,size);
-        amount_of_items = EMPTY;
+        this->data_arr = nullptr;
+        this->arr_size = MAX(INITIAL_SIZE,size);
+        this->amount_of_items = EMPTY;
         this->updateCapacity();
+        this->initializeArray();
     }
 
     void updateCapacity() {
@@ -140,6 +164,35 @@ protected:
 
     }
     */
+
+
+
+    //todo remove for mivnei
+
+    void printHelper(ostream& os) const {
+        cout << "ChainHashArray of size " << this->arr_size;
+        cout << ":" << endl;
+        for (int i = 0; i < this->arr_size; i++) {
+            if (i != 0) {
+                cout << "," << endl;
+            }
+            DeQue<Pair<T>>& temp = this->data_arr[i];
+            os << "at index " << i << ": " << endl;
+            os << '{' << temp << '}';
+        }
+    }
+
+    // Overloaded ostream operator
+    friend ostream& operator<<(ostream& os, const ChainHashArray<T>& deque) {
+        deque.printHelper(os);
+        return os;
+    }
+
+
+
+
+    //todo remove for mivnei
+
 
 };
 

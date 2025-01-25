@@ -6,6 +6,17 @@
 #define DEQUE_H
 
 #include "DeQueNode.h"
+
+//todo remove for mivnei
+#include <fstream>
+#include <iostream>
+using std::cout;
+using std::ostream;
+using std::endl;
+
+//todo remove for mivnei
+
+
 template <typename T>
 class DeQue {
 protected:
@@ -14,18 +25,17 @@ protected:
     int size;
 public:
 
-    DeQue() {
-        head = new DeQueNode<T>();
-        tail = new DeQueNode<T>();
-        size = 0;
-        head->addInitial(this->tail);
+    DeQue() : head(new DeQueNode<T>()), tail(new DeQueNode<T>()), size(0) {
+        //head->addInitial(this->tail);
+        this->head->next = this->tail;
+        this->tail->prev = this->head;
     }
 
     ~DeQue() {
         delete head;
     }
 
-    int getSize() {
+    int getSize() const {
         return size;
     }
 
@@ -53,7 +63,7 @@ public:
 
     T* find(T* value) {
         auto node = this->head->find(value);
-        return node->getData();
+        return (node == nullptr)?nullptr:node->getData();
     }
 
     T* remove(T* item) {
@@ -67,6 +77,29 @@ public:
         --this->size;
         return newTemp;
     }
+
+    void verifyInitialisation() {
+        if(this->size != 0) {
+            return;
+        }
+        this->head->next = this->tail;
+        this->tail->prev = this->head;
+    }
+
+
+
+    //todo remove for mivnei
+
+    // Overloaded ostream operator
+    friend ostream& operator<<(ostream& os, const DeQue<T>& deque) {
+        cout << "linked List of size: " << deque.getSize();
+        cout << " : ";
+        cout << *(deque.head);
+        return os;
+    }
+
+    //todo remove for mivnei
+
 
 };
 

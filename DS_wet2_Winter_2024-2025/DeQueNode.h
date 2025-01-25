@@ -8,11 +8,28 @@
 
 #include <cassert>
 
-constexpr int DEFAULT_KEY = 0;
+
+//todo remove for mivnei
+#include <fstream>
+#include <iostream>
+using std::cout;
+using std::ostream;
+using std::endl;
+
+//todo remove for mivnei
+
+
+
+template <typename T>
+class DeQue;
 
 template <typename T>
 class DeQueNode {
 private:
+
+    // Declare the templated DeQue as a friend
+    template <typename U>
+    friend class DeQue;
 
     inline bool initialNode() const {
         return (this->next == nullptr) && (this->prev == nullptr);
@@ -115,6 +132,9 @@ public:
         if(this->isTail()) {
             return nullptr;
         }
+        if (this->isHead()) {
+            return this->next->find(toFind);
+        }
         if (this->data == toFind) {
             return this;
         }
@@ -134,6 +154,35 @@ public:
 
     //int getKey() {return this->key;}
 
+    //todo remove for mivnei
+
+    void printHelper(ostream& os,int node_number = 0) const {
+        char node_seperator_start = '[';
+        char node_seperator_end = ']';
+        auto node_seperator = "<->";
+        cout << node_seperator_start;
+        if (this->isTail()) {
+            cout << "Tail Node." << node_seperator_end;
+            return;
+        }
+        if (this->isHead()) {
+            cout << "Head Node." << node_seperator_end << node_seperator;
+            this->next->printHelper(os,node_number + 1);
+            return;
+        }
+        cout << "Node number: " << node_number;
+        cout << ", Value : {" << *(this->data) << "}";
+        cout << node_seperator_end << node_seperator;
+        this->next->printHelper(os,node_number + 1);
+    }
+
+    // Overloaded ostream operator
+    friend ostream& operator<<(ostream& os, const DeQueNode<T>& deque) {
+        deque.printHelper(os);
+        return os;
+    }
+
+    //todo remove for mivnei
 
 
 };
