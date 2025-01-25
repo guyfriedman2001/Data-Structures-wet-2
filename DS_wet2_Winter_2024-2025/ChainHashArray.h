@@ -50,12 +50,8 @@ public:
         delete[] data_arr;
     }
 
-    void insert(int key, T* value) {
-        int insertionIndex = this->calcIndex(key);
-        DeQue<Pair<T>>& desiredSlot = this->data_arr[insertionIndex];
-        Pair<T>* newItem = new Pair<T>(key, value);
-        desiredSlot.append(newItem);
-        ++this->amount_of_items;
+    void insert(int key, T* value) { //fixme new mode
+        this->insert(key, value, true);
     }
 
     T* find(int key) {
@@ -67,19 +63,66 @@ public:
     }
 
     T* remove(int key) {
+        return this->remove(key,true);
+    }
+
+    void deleteItem(int key) {
+        delete this->remove(key);
+    }
+
+protected:
+
+    void insert(int key, T* value, bool checkForUpdateSize) {
+        int insertionIndex = this->calcIndex(key);
+        DeQue<Pair<T>>& desiredSlot = this->data_arr[insertionIndex];
+        Pair<T>* newItem = new Pair<T>(key, value);
+        desiredSlot.append(newItem);
+        ++this->amount_of_items;
+        if (checkForUpdateSize) {
+            this->checkUpdateArr();
+        }
+    }
+
+    /**
+     *the same functionality as regular insert, but without
+     *checking for size updates, for inside methods and usages
+     *
+     * @param key
+     * @return
+     */
+    void insertImmediate(int key, T* value) {
+        this->insert(key, value, false);
+    }
+
+    T* remove(int key, bool checkForUpdateSize) {
         int index = this->calcIndex(key);
         DeQue<Pair<T>>* toRemove = &(this->data_arr[index]);
-        Pair<T>* toRemovePair = new Pair<T>(key);
-        Pair<T>* toFind = toRemove->remove(toRemovePair); //fixme
+        Pair<T> toRemovePair = Pair<T>(key);
+        Pair<T>* toFind = toRemove->remove(&toRemovePair); //fixme
+        //delete toRemovePair;
         if (toFind == nullptr) {
             return nullptr;
         }
         T* value = toFind->extract();
+        delete toFind;
         --this->amount_of_items;
+        if (checkForUpdateSize) {
+            this->checkUpdateArr();
+        }
         return value;
     }
 
-protected:
+    /**
+     *the same functionality as regular remove, but without
+     *checking for size updates, for inside methods and usages
+     *
+     * @param key
+     * @return
+     */
+    T* removeImmediate(int key) {
+        return this->remove(key, false);
+    }
+
 
     void initializeArray() {
         this->data_arr = new DeQue<Pair<T>>[this->arr_size];
@@ -116,13 +159,14 @@ protected:
     }
 
     void resize(int new_capacity) {
-        auto other = new ChainHashArray(new_capacity);
+        ChainHashArray<T>* other = new ChainHashArray(new_capacity);
         for (int i = 0; i < this->arr_size; i++) {
-            DeQue<Pair<T>>* temp = (this->data_arr)[i];
-            int tempSize = temp->getSize();
+            DeQue<Pair<T>>& temp = (this->data_arr)[i];
+            int tempSize = temp.getSize(); //fixme move from pointer to reference
             for (int j = 0; j < tempSize; j++) {
-                Pair<T>* tempItem = temp->pop();
-                other->append(tempItem->key, tempItem);
+                Pair<T>* tempItem = temp.pop();
+                other->insertImmediate(tempItem->key, tempItem->extract()); //fixme todo fix
+                delete tempItem;
             }
         }
         this->swapData(other);
@@ -142,7 +186,7 @@ protected:
 
     template <typename K>
     void swap(K& item_1, K& item_2) {
-        K* temp = item_1;
+        K temp = item_1; //fixme might be problematic
         item_1 = item_2;
         item_2 = temp;
     }
@@ -171,6 +215,8 @@ protected:
 
     void printHelper(ostream& os) const {
         cout << "ChainHashArray of size " << this->arr_size;
+        cout << ", with " << this->amount_of_items << " items";
+        cout << " and a capacity of " << this->capacity;
         cout << ":" << endl;
         for (int i = 0; i < this->arr_size; i++) {
             if (i != 0) {

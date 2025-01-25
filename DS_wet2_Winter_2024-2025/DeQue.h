@@ -66,7 +66,7 @@ public:
         return (node == nullptr)?nullptr:node->getData();
     }
 
-    T* remove(T* item) {
+    T* remove(T* item) { //fixme יש פה השוואת כתובות במקום השוואת ערכים
         DeQueNode<T>* temp = this->head->remove(item);
         if (temp == nullptr) {
             return nullptr;

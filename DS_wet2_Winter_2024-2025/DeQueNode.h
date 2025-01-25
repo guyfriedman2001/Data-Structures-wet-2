@@ -73,7 +73,8 @@ public:
     void deCouple() {
         this->next->prev = this->prev;
         this->prev->next = this->next;
-        this->next = this->prev = nullptr;
+        this->next = nullptr;
+        this->prev = nullptr;
     }
 
     inline bool hasNext() const {
