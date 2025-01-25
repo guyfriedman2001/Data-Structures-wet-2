@@ -14,6 +14,7 @@
 #define PLAINS25WINTER_WET1_H_
 
 #include "wet2util.h"
+#include "ChainHashArray.h"
 
 class Plains {
 private:
