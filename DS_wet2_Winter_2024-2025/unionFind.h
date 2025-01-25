@@ -8,7 +8,7 @@ template<class T>
 class UnionFind {
 protected:
     typedef int set_id_t;
-    //ChainHashArray<T> m_sets;           // Maps roots to set descriptions
+    ChainHashArray<T> m_sets;           // Maps roots to set descriptions
     ChainHashArray<size_t> m_sizes;     // Maps roots to sizes of their trees
     ChainHashArray<set_id_t> m_parents; // Maps each set to its parent in the trees
 
@@ -38,7 +38,6 @@ public:
     bool hasEverExisted(set_id_t member) const;
 };
 
-// Implementation
 
 template<class T>
 void UnionFind<T>::makeSet(set_id_t setId, const T& set) {
@@ -56,7 +55,6 @@ T& UnionFind<T>::unionSets(set_id_t root1, set_id_t root2) {
     if (*m_sizes.find(root1) < *m_sizes.find(root2)) {
         std::swap(root1, root2);
     }
-    // root1 holds the bigger tree root
     m_parents.insert(root2, root1);
     *m_sizes.find(root1) += *m_sizes.find(root2);
     m_sets.remove(root2);
@@ -73,7 +71,7 @@ T& UnionFind<T>::getRootSet(set_id_t root) {
 template<class T>
 typename UnionFind<T>::set_id_t UnionFind<T>::findRoot(set_id_t setId) {
     if (*m_parents.find(setId) != setId) {
-        m_parents.insert(setId, findRoot(*m_parents.find(setId))); // Path compression
+        m_parents.insert(setId, findRoot(*m_parents.find(setId)));
     }
     return *m_parents.find(setId);
 }
