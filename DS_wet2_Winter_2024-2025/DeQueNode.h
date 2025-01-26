@@ -77,7 +77,7 @@ public:
         this->prev = nullptr;
     }
 
-    inline bool hasNext() const {
+    inline bool hasNext() const { //fixme problem
         return !((this->next != nullptr) && (this->next->isTail()));
     }
 
@@ -129,24 +129,27 @@ public:
         return this->data;
     }
 
-    DeQueNode<T>* find(T* toFind) {
+    DeQueNode<T>* find(T& toFind) {
         if(this->isTail()) {
             return nullptr;
         }
         if (this->isHead()) {
             return this->next->find(toFind);
         }
-        if (this->data == toFind) {
+        if (*(this->data) == toFind) {
             return this;
         }
         return this->next->find(toFind);
     }
 
-    DeQueNode<T>* remove(T* toFind) {
+    DeQueNode<T>* remove(T& toFind) {
         if(this->isTail()) {
             return nullptr;
         }
-        if (this->data == toFind) {
+        if (this->isHead()) {
+            return this->next->remove(toFind);
+        }
+        if (*(this->data) == toFind) {
             this->deCouple();
             return this;
         }
@@ -172,7 +175,13 @@ public:
             return;
         }
         cout << "Node number: " << node_number;
-        cout << ", Value : {" << *(this->data) << "}";
+        cout << ", Value : {";
+        if (this->data == nullptr) {
+            cout << "nullptr";
+        } else {
+            cout << (*(this->data));
+        }
+        cout<< "}";
         cout << node_seperator_end << node_seperator;
         this->next->printHelper(os,node_number + 1);
     }

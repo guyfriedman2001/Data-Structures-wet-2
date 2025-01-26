@@ -61,12 +61,12 @@ public:
         return tempVal;
     }
 
-    T* find(T* value) {
+    T* find(T& value) {
         auto node = this->head->find(value);
         return (node == nullptr)?nullptr:node->getData();
     }
 
-    T* remove(T* item) { //fixme יש פה השוואת כתובות במקום השוואת ערכים
+    T* remove(T& item) { //fixme יש פה השוואת כתובות במקום השוואת ערכים
         DeQueNode<T>* temp = this->head->remove(item);
         if (temp == nullptr) {
             return nullptr;

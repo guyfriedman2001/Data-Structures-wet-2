@@ -13,7 +13,7 @@ constexpr int INITIAL_SIZE = 16;
 #define MIN(a,b) (a<b)?a:b
 #define MAKE_DOUBLE(a) (a*2)
 #define HALF_OF(a) (a*0.5)
-#define QUARTER_OF(a) (a*0.5)
+#define QUARTER_OF(a) (a*0.25)
 #define EMPTY (0)
 
 
@@ -56,9 +56,9 @@ public:
 
     T* find(int key) {
         int index = this->calcIndex(key);
-        Pair<T>* temp = new Pair<T>(key);
+        Pair<T> temp = Pair<T>(key);//new Pair<T>(key);
         Pair<T>* toFind = this->data_arr[index].find(temp);
-        delete temp;
+        //delete temp;
         return toFind == nullptr ? nullptr : toFind->value;
     }
 
@@ -98,7 +98,8 @@ protected:
         int index = this->calcIndex(key);
         DeQue<Pair<T>>* toRemove = &(this->data_arr[index]);
         Pair<T> toRemovePair = Pair<T>(key);
-        Pair<T>* toFind = toRemove->remove(&toRemovePair); //fixme
+
+        Pair<T>* toFind = (toRemove->remove(toRemovePair)); //fixme
         //delete toRemovePair;
         if (toFind == nullptr) {
             return nullptr;
@@ -152,6 +153,7 @@ protected:
     void checkUpdateArr() {
         if (this->amount_of_items == this->capacity) {
             this->makeBigger();
+            return;
         }
         if (this->amount_of_items <= QUARTER_OF(this->capacity)) {
             this->makeSmaller();
@@ -163,7 +165,7 @@ protected:
         for (int i = 0; i < this->arr_size; i++) {
             DeQue<Pair<T>>& temp = (this->data_arr)[i];
             int tempSize = temp.getSize(); //fixme move from pointer to reference
-            for (int j = 0; j < tempSize; j++) {
+            for (int j = 0; j < tempSize; j++) { //fixme problem
                 Pair<T>* tempItem = temp.pop();
                 other->insertImmediate(tempItem->key, tempItem->extract()); //fixme todo fix
                 delete tempItem;
