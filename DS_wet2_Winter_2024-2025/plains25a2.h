@@ -15,12 +15,14 @@
 
 #include "wet2util.h"
 #include "ChainHashArray.h"
+#include "union_find_jockey.h"
 
 class Plains {
 private:
     //
     // Here you may add anything you want
     //
+    UnionFindJockeys unionFindJockeys;
     
 public:
     // <DO-NOT-MODIFY> {

@@ -16,8 +16,19 @@ Plains::~Plains()
 
 StatusType Plains::add_team(int teamId)
 {
-    return StatusType::FAILURE;
+    try{
+        if(teamId<=0) 
+            return StatusType::INVALID_INPUT; 
+        else if (!unionFindJockeys.teamExist(teamId))
+            return StatusType::FAILURE;
+        else
+            unionFindJockeys.addTeam(teamId);
+    }
+    catch (std::bad_alloc& e) {
+        return StatusType::ALLOCATION_ERROR;
+    }
 }
+
 
 StatusType Plains::add_jockey(int jockeyId, int teamId)
 {
@@ -29,9 +40,17 @@ StatusType Plains::update_match(int victoriousJockeyId, int losingJockeyId)
     return StatusType::FAILURE;
 }
 
-StatusType Plains::merge_teams(int teamId1, int teamId2)
-{
-    return StatusType::FAILURE;
+StatusType Plains::merge_teams(int teamId1, int teamId2){
+    try{
+        if(teamId1<=0||teamId2<=0)
+            return StatusType::INVALID_INPUT;
+        else if(!unionFindJockeys.teamExist(teamId1)||!unionFindJockeys.teamExist(teamId2))
+            return StatusType::FAILURE;
+        unionFindJockeys.unionTeams(teamId1,teamId2);
+    }
+    catch(std::bad_alloc& e){
+        return StatusType::ALLOCATION_ERROR;
+    }
 }
 
 StatusType Plains::unite_by_record(int record)
