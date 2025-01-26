@@ -7,8 +7,8 @@
 #include "DeQue.h"
 #include "Pair.h"
 #include <cassert>
-constexpr int MAX_FILL_RATIO = 10;
-constexpr int INITIAL_SIZE = 16;
+constexpr int MAX_FILL_RATIO_CHAIN_HASH_ARRAY = 10;
+constexpr int INITIAL_SIZE_CHAIN_HASH_ARRAY = 16;
 #define MAX(a,b) (a>b)?a:b
 #define MIN(a,b) (a<b)?a:b
 #define MAKE_DOUBLE(a) (a*2)
@@ -40,7 +40,7 @@ public:
 
     ChainHashArray() : capacity(EMPTY) {
         this->data_arr = nullptr;
-        this->arr_size = INITIAL_SIZE;
+        this->arr_size = INITIAL_SIZE_CHAIN_HASH_ARRAY;
         this->amount_of_items = EMPTY;
         this->updateCapacity();
         this->initializeArray();
@@ -68,6 +68,26 @@ public:
 
     void deleteItem(int key) {
         delete this->remove(key);
+    }
+
+    int size() {
+        return this->amount_of_items;
+    }
+
+    T* popRandom() {
+        if (this->amount_of_items == EMPTY) {
+            return nullptr;
+        }
+        for (int i = 0; i < this->amount_of_items; i++) {
+            DeQue<Pair<T>>& desiredSlot = this->data_arr[i];
+            if (desiredSlot.getSize() != EMPTY) {
+                Pair<T>* temp = desiredSlot.pop();
+                --this->amount_of_items;
+                T* tempVal = temp->extract();
+                delete temp;
+                return tempVal;
+            }
+        }
     }
 
 protected:
@@ -140,14 +160,14 @@ protected:
 
     ChainHashArray(int size)  : capacity(EMPTY) {
         this->data_arr = nullptr;
-        this->arr_size = MAX(INITIAL_SIZE,size);
+        this->arr_size = MAX(INITIAL_SIZE_CHAIN_HASH_ARRAY,size);
         this->amount_of_items = EMPTY;
         this->updateCapacity();
         this->initializeArray();
     }
 
     void updateCapacity() {
-        capacity = this->arr_size * MAX_FILL_RATIO;
+        capacity = this->arr_size * MAX_FILL_RATIO_CHAIN_HASH_ARRAY;
     }
 
     int calcIndex(int key) {
@@ -184,7 +204,7 @@ protected:
     }
 
     void makeSmaller() {
-        if(this->arr_size <= INITIAL_SIZE) {
+        if(this->arr_size <= INITIAL_SIZE_CHAIN_HASH_ARRAY) {
             return;
         }
         this->resize(HALF_OF(this->arr_size));
