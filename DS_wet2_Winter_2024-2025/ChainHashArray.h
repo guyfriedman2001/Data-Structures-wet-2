@@ -94,6 +94,10 @@ protected:
         this->insert(key, value, false);
     }
 
+    void insertImmediate(Pair<T>* newItem) {
+        this->insertImmediate(newItem->key); //todo fixme
+    }
+
     T* remove(int key, bool checkForUpdateSize) {
         int index = this->calcIndex(key);
         DeQue<Pair<T>>* toRemove = &(this->data_arr[index]);

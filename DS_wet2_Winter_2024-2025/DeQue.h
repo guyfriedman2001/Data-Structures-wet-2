@@ -6,6 +6,7 @@
 #define DEQUE_H
 
 #include "DeQueNode.h"
+#define EMPTY (0)
 
 //todo remove for mivnei
 #include <fstream>
@@ -71,7 +72,8 @@ public:
         if (temp == nullptr) {
             return nullptr;
         }
-        T* newTemp = temp->getData();
+        T* newTemp = temp->extract();
+        temp->verifyDeCouple(); //fixme
         temp->nullify();
         delete temp;
         --this->size;
@@ -79,7 +81,7 @@ public:
     }
 
     void verifyInitialisation() {
-        if(this->size != 0) {
+        if(this->size != EMPTY) {
             return;
         }
         this->head->next = this->tail;

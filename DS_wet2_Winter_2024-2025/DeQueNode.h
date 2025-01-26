@@ -77,6 +77,29 @@ public:
         this->prev = nullptr;
     }
 
+    void verifyDeCouple() {
+        if (this->next == nullptr && this->prev == nullptr) {
+            return;
+        }
+        this->deCouple();
+    }
+
+    T* extractAndDelete() {
+        this->deCouple();
+        T* temp = this->data;
+        this->data = nullptr;
+        this->nullify();
+        //delete this;
+        return temp;
+    }
+
+    T* extract() {
+        T* temp = this->data;
+        this->data = nullptr;
+        return temp;
+    }
+
+
     inline bool hasNext() const { //fixme problem
         return !((this->next != nullptr) && (this->next->isTail()));
     }
