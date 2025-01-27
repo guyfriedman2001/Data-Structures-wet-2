@@ -19,7 +19,7 @@ public:
     UnionFindNode(T* data) : data(data), size(1) {}
 
     ~UnionFindNode() {
-        delete data;
+        //delete data;
     }
 
     T* extract() {

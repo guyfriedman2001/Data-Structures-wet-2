@@ -15,7 +15,6 @@
 
 #include "wet2util.h"
 #include "ChainHashArray.h"
-#include "union_find_jockey.h"
 #include <new>
 
 #include "Jockey.h"

@@ -6,7 +6,6 @@
 #define TEAMUNIONFIND_H
 #include "UnionFindTwo.h"
 #include "Team.h"
-#include "uptree_jockeys.h"
 
 
 class TeamUnionFind : public UnionFind<Team> {
@@ -78,6 +77,7 @@ public:
         Team* record_leader2 = this->find(record_leader2_id);
         int record1 = record_leader1->getRecord();
         int record2 = record_leader2->getRecord();
+        int records_sum = record1 + record2;
         if (record1 >= record2) {
             record_leader2->followTeam(record_leader1);
             root_team1->followTeam(record_leader1);
@@ -88,6 +88,10 @@ public:
             root_team1->followTeam(record_leader2);
             root_team2->followTeam(record_leader2);
         }
+        root_team1->setRecord(records_sum);
+        root_team2->setRecord(records_sum);
+        record_leader1->setRecord(records_sum);
+        record_leader2->setRecord(records_sum);
         this->uniteGroup(id1, id2);
     }
 

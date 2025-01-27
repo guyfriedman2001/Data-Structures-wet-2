@@ -20,7 +20,9 @@ protected:
 
 public:
 
-    UnionFind() : nodes(new ChainHashArray<UnionFindNode<T>>()), size(EMPTY) {}
+    UnionFind() : nodes(nullptr), size(EMPTY) {
+        this->nodes = new ChainHashArray<UnionFindNode<T>>();
+    }
 
     ~UnionFind() {
         delete this->nodes;
@@ -34,7 +36,7 @@ public:
 
     T* find(int key) { //todo
         UnionFindNode<T>* tempNode = this->findNode(key);
-        return tempNode->getData();
+        return (tempNode==nullptr)?nullptr:tempNode->getData();
     }
 
     bool connected(int id1, int id2) {

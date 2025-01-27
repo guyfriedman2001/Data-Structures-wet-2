@@ -27,8 +27,10 @@ int main()
     
     // Execute all commands in file
     string op;
+    int i = -1;
     while (cin >> op)
     {
+        ++i;
         if (!op.compare("add_team")) {
             cin >> d1;
             print(op, obj->add_team(d1));
@@ -59,6 +61,7 @@ int main()
             cout << "Invalid input format" << endl;
             return -1;
         }
+
     }
 
     // Quit 

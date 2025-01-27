@@ -6,7 +6,6 @@
 #ifndef RECORD_H
 #define RECORD_H
 #include "ChainHashArray.h"
-#include "uptree_jockeys.h"
 #include "Team.h"
 typedef Team what_to_hold;
 

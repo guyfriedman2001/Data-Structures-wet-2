@@ -5,14 +5,14 @@
 #ifndef TEAM_H
 #define TEAM_H
 
-
+#include <cassert>
 
 class Team {
 private:
     int actual_id;
     int curr_id;
     int record;
-    Team* next;
+    Team* next; // isn't used, but already mixed up in the code
 public:
     Team() = delete;
 
@@ -50,12 +50,17 @@ public:
     }
 
     int getRecord() {
-        assert(this->actual_id == this->curr_id);
+        assert(this->isActive());
         return this->record;
     }
 
     bool isActive() {
         return this->curr_id == this->actual_id;
+    }
+
+    int getRecordWithoutActive() {
+        //no assertion that this is active
+        return this->record;
     }
 
 
