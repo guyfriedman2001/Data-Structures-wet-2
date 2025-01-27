@@ -17,17 +17,19 @@
 #include "ChainHashArray.h"
 #include "union_find_jockey.h"
 #include <new>
+
+#include "Jockey.h"
 #include "Record.h"
+#include "TeamUnionFind.h"
 
 class Plains {
 private:
     //
     // Here you may add anything you want
     //
-    UnionFindJockeys unionFindJockeys;
     ChainHashArray<Record>* records;
-    ChainHashArray<TeamNode>* teams;
-    ChainHashArray<JockeyNode>* jockeys;
+    TeamUnionFind* teams;
+    ChainHashArray<Jockey>* jockeys;
     
 public:
     // <DO-NOT-MODIFY> {
