@@ -41,6 +41,12 @@ public:
         return this->data;
     }
 
+    void swapData(UnionFindNode* other) {
+        T* temp = other->data;
+        other->data = this->data;
+        this->data = temp;
+    }
+
     bool unite(UnionFindNode* node) {
         if (node == nullptr) {
             return false;
@@ -51,7 +57,7 @@ public:
             return false;
         }
         if (thisGroup->size < otherGroup->size) {
-            thisGroup-group = otherGroup;
+            thisGroup->group = otherGroup;
         } else {
             otherGroup->group = thisGroup;
         }

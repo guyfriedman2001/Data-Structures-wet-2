@@ -4,7 +4,7 @@
 
 #ifndef UNIONFIND_H
 #define UNIONFIND_H
-#include "UnionFindtwoNode.h"
+#include "UnionFindTwoNode.h"
 #include "ChainHashArray.h"
 #define EMPTY (0)
 
@@ -14,6 +14,10 @@ protected:
     ChainHashArray<UnionFindNode<T>>* nodes;
     int size;
 
+    UnionFindNode<T>* findNode(int key) {
+        return this->nodes->find(key);
+    }
+
 public:
 
     UnionFind() : nodes(new ChainHashArray<UnionFindNode<T>>()), size(EMPTY) {}
@@ -22,27 +26,28 @@ public:
         delete this->nodes;
     }
 
-    void insert(int id) {
-        UnionFindNode<T>* node = new UnionFindNode<T>(id);
+    void insert(int id, T* value) {
+        UnionFindNode<T>* node = new UnionFindNode<T>(value);
         this->nodes->insert(id,node);
         ++this->size;
     }
 
-    T* find(int key) {
-        return this->nodes->find(key);
+    T* find(int key) { //todo
+        UnionFindNode<T>* tempNode = this->findNode(key);
+        return tempNode->getData();
     }
 
     bool connected(int id1, int id2) {
-        UnionFindNode<T>* node1 = this->find(id1);
-        UnionFindNode<T>* node2 = this->find(id2);
+        UnionFindNode<T>* node1 = this->findNode(id1);
+        UnionFindNode<T>* node2 = this->findNode(id2);
         UnionFindNode<T>* groupOne = node1->getGroup();
         UnionFindNode<T>* groupTwo = node2->getGroup();
         return groupOne == groupTwo;
     }
 
-    bool uniteGroup(int id1, int id2) {
-        UnionFindNode<T>* node1 = this->find(id1);
-        UnionFindNode<T>* node2 = this->find(id2);
+    virtual bool uniteGroup(int id1, int id2) {
+        UnionFindNode<T>* node1 = this->findNode(id1);
+        UnionFindNode<T>* node2 = this->findNode(id2);
         UnionFindNode<T>* groupOne = node1->getGroup();
         UnionFindNode<T>* groupTwo = node2->getGroup();
         if (groupOne == nullptr || groupTwo == nullptr) {
@@ -52,7 +57,19 @@ public:
     }
 
     T* remove(int key) {
-        T* result = this->remove(key);
+        /*
+        T* toRemove = this->find(key);
+        if (toRemove == nullptr) {
+            return nullptr;
+        }
+        */
+        //T* result = this->nodes->remove(key);
+        UnionFindNode<T>* tempNode = this->nodes->remove(key);
+        if (tempNode == nullptr) {
+            return nullptr;
+        }
+        T* result = tempNode->extract();
+        delete tempNode;
         if (result != nullptr) {
             --this->size;
         }
