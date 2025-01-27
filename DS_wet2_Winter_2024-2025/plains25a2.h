@@ -16,6 +16,8 @@
 #include "wet2util.h"
 #include "ChainHashArray.h"
 #include "union_find_jockey.h"
+#include <new>
+#include "Record.h"
 
 class Plains {
 private:
@@ -23,6 +25,9 @@ private:
     // Here you may add anything you want
     //
     UnionFindJockeys unionFindJockeys;
+    ChainHashArray<Record>* records;
+    ChainHashArray<TeamNode>* teams;
+    ChainHashArray<JockeyNode>* jockeys;
     
 public:
     // <DO-NOT-MODIFY> {

@@ -11,7 +11,11 @@ Plains::Plains()
 
 Plains::~Plains()
 {
-    
+    this->records->clear();
+    delete records;
+    delete teams;
+    delete jockeys;
+
 }
 
 StatusType Plains::add_team(int teamId)
