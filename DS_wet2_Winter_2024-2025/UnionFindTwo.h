@@ -4,7 +4,8 @@
 
 #ifndef UNIONFIND_H
 #define UNIONFIND_H
-#include "UnionFindNode.h"
+#include "UnionFindtwoNode.h"
+#include "ChainHashArray.h"
 #define EMPTY (0)
 
 template<class T>
