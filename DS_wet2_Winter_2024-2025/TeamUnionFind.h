@@ -20,30 +20,32 @@ public:
         return this->findNode(key);
     }
 
-     bool uniteGroup(int id1, int id2) override {
-        UnionFindNode<Team>* node1 = this->findNode(id1);
-        UnionFindNode<Team>* node2 = this->findNode(id2);
-        UnionFindNode<Team>* groupOne = node1->getGroup();
-        UnionFindNode<Team>* groupTwo = node2->getGroup();
-        if (groupOne == nullptr || groupTwo == nullptr) {
-            return false;
-        }
-        if (groupOne == groupTwo) {
-            return false; //fixme what if unite is called on the same group twice?
-        }
-        Team* team1 = groupOne->getData(); //now i have the teams before the merge
-        Team* team2 = groupTwo->getData(); //i want to make it so the team with the higher record is in the bigger tree head
-        if (team1->getRecord() > team2->getRecord() && !(groupOne > groupTwo)) {
-            groupOne->swapData(groupTwo);
-        }
-        if (team1->getRecord() < team2->getRecord() && !(groupOne < groupTwo)) {
-            groupOne->swapData(groupTwo);
-        }
+/*
+    bool uniteGroup(int id1, int id2) override {
+            UnionFindNode<Team>* node1 = this->findNode(id1);
+            UnionFindNode<Team>* node2 = this->findNode(id2);
+            UnionFindNode<Team>* groupOne = node1->getGroup();
+            UnionFindNode<Team>* groupTwo = node2->getGroup();
+            if (groupOne == nullptr || groupTwo == nullptr) {
+                return false;
+            }
+            if (groupOne == groupTwo) {
+                return false; //fixme what if unite is called on the same group twice?
+            }
+            Team* team1 = groupOne->getData(); //now i have the teams before the merge
+            Team* team2 = groupTwo->getData(); //i want to make it so the team with the higher record is in the bigger tree head
+            if (team1->getRecord() > team2->getRecord() && !(groupOne > groupTwo)) {
+                groupOne->swapData(groupTwo);
+            }
+            if (team1->getRecord() < team2->getRecord() && !(groupOne < groupTwo)) {
+                groupOne->swapData(groupTwo);
+            }
 
 
-        bool answer = groupOne->unite(groupTwo);
+            bool answer = groupOne->unite(groupTwo);
 
-    }
+        }
+ */
 
     /*
     void uniteTeam(int id1, int id2) {
@@ -76,8 +78,7 @@ public:
         Team* record_leader2 = this->find(record_leader2_id);
         int record1 = record_leader1->getRecord();
         int record2 = record_leader2->getRecord();
-        assert(record1 != record2);
-        if (record1 > record2) {
+        if (record1 >= record2) {
             record_leader2->followTeam(record_leader1);
             root_team1->followTeam(record_leader1);
             root_team2->followTeam(record_leader1);

@@ -7,7 +7,8 @@
 #define RECORD_H
 #include "ChainHashArray.h"
 #include "uptree_jockeys.h"
-typedef TeamNode what_to_hold;
+#include "Team.h"
+typedef Team what_to_hold;
 
 class Record {
 protected:
@@ -23,6 +24,30 @@ public:
     ~Record() {
         this->held_items->clear();
         delete this->held_items;
+    }
+
+    bool isEmpty() {
+        return this->held_items->size() == 0;
+    }
+
+    bool isSingleton() {
+        return this->held_items->size() == 1;
+    }
+
+    what_to_hold* pop() {
+        return this->held_items->popRandom();
+    }
+
+    what_to_hold* remove(int key) {
+        return this->held_items->remove(key);
+    }
+
+    void insert(int key, what_to_hold* value) {
+        this->held_items->insert(key, value);
+    }
+
+    int get_records_val() {
+        return this->record_value;
     }
 
 

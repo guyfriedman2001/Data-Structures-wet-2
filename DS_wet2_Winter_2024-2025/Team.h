@@ -29,10 +29,11 @@ public:
     }
 
     int getId() const {
-        return this->id;
+        return this->curr_id;
     }
 
     int getRecord() const {
+        assert(this->actual_id == this->curr_id);
         return this->record;
     }
 
@@ -49,8 +50,14 @@ public:
     }
 
     int getRecord() {
+        assert(this->actual_id == this->curr_id);
         return this->record;
     }
+
+    bool isActive() {
+        return this->curr_id == this->actual_id;
+    }
+
 
 };
 

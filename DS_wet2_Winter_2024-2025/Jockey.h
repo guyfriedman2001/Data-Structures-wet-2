@@ -15,11 +15,13 @@ protected:
 public:
     Jockey() = delete;
 
+    /*
     Jockey(int id) {
         this->id = id;
         this->record = 0;
         this->team_id = 0;
     }
+    */
 
     Jockey(int id, int team_id) {
         this->id = id;

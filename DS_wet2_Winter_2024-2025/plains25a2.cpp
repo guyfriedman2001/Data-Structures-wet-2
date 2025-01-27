@@ -5,6 +5,9 @@
 
 #include "Jockey.h"
 
+#define MIN(a,b) (a<b)?a:b
+
+#define ABS(a) ((a)<0?(-(a)):(a))
 
 Plains::Plains()
 {
@@ -57,22 +60,140 @@ StatusType Plains::add_jockey(int jockeyId, int teamId)
 
 StatusType Plains::update_match(int victoriousJockeyId, int losingJockeyId) //todo
 {
-    return StatusType::FAILURE;
+    try{
+        if(victoriousJockeyId<=0 || losingJockeyId <= 0||victoriousJockeyId == losingJockeyId) {
+            return StatusType::INVALID_INPUT;
+        }
+        Jockey* jockVic = this->jockeys->find(victoriousJockeyId);
+        Jockey* jockLos = this->jockeys->find(losingJockeyId);
+        if(jockVic==nullptr || jockLos==nullptr) {
+            return StatusType::FAILURE;
+        }
+        Team* teamVic = this->teams->getLeader(jockVic->getTeamId());
+        Team* teamLos = this->teams->getLeader(jockLos->getTeamId());
+        if(teamVic == teamLos) {
+            return StatusType::FAILURE;
+        }
+        int oldVicRec = teamVic->getRecord();
+        int oldLosRec = teamLos->getRecord();
+        jockVic->winMatch();
+        jockLos->loseMatch();
+        teamVic->winMatch();
+        teamLos->loseMatch();
+        Record* oldWin = this->records->find(oldVicRec);
+        Record* oldLos = this->records->find(oldLosRec);
+        if (oldWin != nullptr) {
+            oldWin->remove(teamVic->getId());
+            if (oldWin->isEmpty()) {
+                this->records->deleteItem(oldWin->get_records_val());
+            }
+        }
+        if (oldLos != nullptr) {
+            oldLos->remove(teamLos->getId());
+            if (oldLos->isEmpty()) {
+                this->records->deleteItem(oldLos->get_records_val());
+            }
+        }
+        int newVicRec = teamVic->getRecord();
+        int newLosRec = teamLos->getRecord();
+        assert(newVicRec==(oldVicRec+1));
+        assert(newLosRec==(oldLosRec-1));
+        Record* newWin = this->records->find(newVicRec);
+        Record* newLos = this->records->find(newLosRec);
+        if (newWin == nullptr) {
+            newWin = new Record(newVicRec);
+            this->records->insert(newVicRec, newWin);
+        }
+        if (newLos == nullptr) {
+            newLos = new Record(newLosRec);
+            this->records->insert(newLosRec, newLos);
+        }
+        newWin->insert(teamVic->getId(),teamVic);
+        newLos->insert(teamLos->getId(),teamLos);
+        return StatusType::SUCCESS;
+    }
+    catch (std::bad_alloc& e) {
+        return StatusType::ALLOCATION_ERROR;
+    }
 }
 
-StatusType Plains::merge_teams(int teamId1, int teamId2){
+/*
+StatusType Plains::merge_teams(int teamId1, int teamId2){ //fixme
     try{
-        if(teamId1<=0||teamId2<=0||teamId1==teamId2) { //todo check last condition
+        if(teamId1<=0||teamId2<=0||teamId1==teamId2) {
             return StatusType::INVALID_INPUT;
         }
         //Team* team1 = this->teams->find(teamId1);
         //Team* team2 = this->teams->find(teamId2);
-        Team* leader1 = this->teams->getLeader(teamId1);
-        Team* leader2 = this->teams->getLeader(teamId2);
+        Team* leader1 = this->teams->find(teamId1); //if 'isActive()' is redundant then func should be
+        Team* leader2 = this->teams->find(teamId2); //findLeader() instead of find
         if (leader1==nullptr || leader2==nullptr || leader1==leader2) {
             return StatusType::FAILURE;
         }
+        //todo add 'isActive()' check
+        if (!leader1->isActive() || !leader2->isActive()) {
+            return StatusType::FAILURE;
+        }
+        int initial_rec1 = leader1->getRecord();
+        int initial_rec2 = leader2->getRecord();
         this->teams->uniteTeams(teamId1, teamId2);
+        Record* record = nullptr;
+        if (initial_rec1 > initial_rec2) {
+            record = this->records->find(initial_rec2);
+            record->remove(leader2->getId());
+        }
+        if (initial_rec1 < initial_rec2) {
+            record = this->records->find(initial_rec1);
+            record->remove(leader1->getId());
+        }
+        assert(initial_rec1!=initial_rec2);
+        if (record->isEmpty()) {
+            this->records->deleteItem(MIN(initial_rec1, initial_rec2));
+        }
+
+
+        return StatusType::SUCCESS;
+    }
+    catch(std::bad_alloc& e){
+        return StatusType::ALLOCATION_ERROR;
+    }
+}
+*/
+
+StatusType Plains::merge_teams(int teamId1, int teamId2){
+    try{
+        if(teamId1<=0||teamId2<=0||teamId1==teamId2) {
+            return StatusType::INVALID_INPUT;
+        }
+        //Team* team1 = this->teams->find(teamId1);
+        //Team* team2 = this->teams->find(teamId2);
+        Team* leader1 = this->teams->find(teamId1); //if 'isActive()' is redundant then func should be
+        Team* leader2 = this->teams->find(teamId2); //findLeader() instead of find
+        if (leader1==nullptr || leader2==nullptr || leader1==leader2) {
+            return StatusType::FAILURE;
+        }
+        //todo add 'isActive()' check
+        if (!leader1->isActive() || !leader2->isActive()) {
+            return StatusType::FAILURE;
+        }
+        int initial_rec1 = leader1->getRecord();
+        int initial_rec2 = leader2->getRecord();
+        this->teams->uniteTeams(teamId1, teamId2);
+        Record* record = nullptr;
+        if (initial_rec1 >= initial_rec2) {
+            record = this->records->find(initial_rec2);
+            record->remove(leader2->getId());
+        }
+        if (initial_rec1 < initial_rec2) {
+            record = this->records->find(initial_rec1);
+            record->remove(leader1->getId());
+        }
+        //assert(initial_rec1!=initial_rec2);
+        if (record->isEmpty()) {
+            this->records->deleteItem(MIN(initial_rec1, initial_rec2));
+        }
+
+
         return StatusType::SUCCESS;
     }
     catch(std::bad_alloc& e){
@@ -80,9 +201,32 @@ StatusType Plains::merge_teams(int teamId1, int teamId2){
     }
 }
 
-StatusType Plains::unite_by_record(int record) //todo
+StatusType Plains::unite_by_record(int record)
 {
-    return StatusType::FAILURE;
+    if (record<=0) {
+        return StatusType::INVALID_INPUT;
+    }
+    int pos_rec = ABS(record);
+    Record* pos_record = this->records->find(pos_rec);
+    Record* neg_record = this->records->find(-pos_rec);
+    if (pos_record == nullptr || neg_record == nullptr) {
+        return StatusType::FAILURE;
+    }
+    if (!((pos_record->isSingleton())&&(neg_record->isSingleton()))) {
+        return StatusType::FAILURE;
+    }
+    Team* negative_team = neg_record->pop();
+    Team* positive_team = pos_record->pop();
+    int negative_id = negative_team->getId();
+    int positive_id = positive_team->getId();
+    neg_record->insert(negative_id, negative_team);
+    pos_record->insert(positive_id, positive_team);
+    /**
+     *basically i just made sure that there is just one team for +rec and for -rec,
+     *then i got the team to get its id, then put the teams back in their corresponding records
+     *so the rest of the code would work as expected, and then i just used the built in merge teams function.
+     */
+    return this->merge_teams(positive_id, negative_id);
 }
 
 output_t<int> Plains::get_jockey_record(int jockeyId)
