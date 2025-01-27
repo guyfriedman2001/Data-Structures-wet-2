@@ -78,7 +78,7 @@ public:
         if (this->amount_of_items == EMPTY) {
             return nullptr;
         }
-        for (int i = 0; i < this->amount_of_items; i++) {
+        for (int i = 0; i < this->arr_size; i++) {
             DeQue<Pair<T>>& desiredSlot = this->data_arr[i];
             if (desiredSlot.getSize() != EMPTY) {
                 Pair<T>* temp = desiredSlot.pop();
@@ -88,6 +88,16 @@ public:
                 return tempVal;
             }
         }
+        //fixme no check for this->checkUpdateArr();
+        throw std::out_of_range("No items in the chain hash array"); //fixme remove for mivnei
+        return nullptr; //if we got here then there is a problem
+    }
+
+    void clear() {
+        for (int i = 0; i < this->amount_of_items; i++) {
+            this->popRandom();
+        }
+        this->checkUpdateArr();
     }
 
 protected:
@@ -150,6 +160,7 @@ protected:
 
 
     void initializeArray() {
+        //delete[] this->data_arr;
         this->data_arr = new DeQue<Pair<T>>[this->arr_size];
         for (int i = 0; i < this->arr_size; ++i) {
             //this->data_arr[i] = *(new DeQue<Pair<T>>()); //fixme
