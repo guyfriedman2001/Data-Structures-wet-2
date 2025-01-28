@@ -54,6 +54,10 @@ public:
         return this->record;
     }
 
+    int getActualID() {
+        return this->actual_id;
+    }
+
     bool isActive() {
         return this->curr_id == this->actual_id;
     }

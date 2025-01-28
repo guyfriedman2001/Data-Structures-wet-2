@@ -184,7 +184,8 @@ protected:
     int calcIndex(int key) {
         int sheerit = key % this->arr_size;
         sheerit += this->arr_size;
-        return sheerit % this->arr_size;
+        int positive_sheerit = sheerit % this->arr_size;
+        return positive_sheerit;
     }
 
     void checkUpdateArr() {

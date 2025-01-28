@@ -11,105 +11,167 @@
 
 Plains::Plains()
 {
-    
+    /*
+    ChainHashArray<Record>* records;
+    TeamUnionFind* teams;
+    ChainHashArray<Jockey>* jockeys;
+     */
+    this->records = new ChainHashArray<Record>();
+    this->teams = new TeamUnionFind();
+    this->jockeys = new ChainHashArray<Jockey>();
 }
 
 Plains::~Plains()
 {
-    this->records->clear();
     delete records;
     delete teams;
     delete jockeys;
-
 }
 
-StatusType Plains::add_team(int teamId)
+StatusType Plains::add_team(int teamId) //todo verify
 {
     try{
         if(teamId<=0) {
             return StatusType::INVALID_INPUT;
-        }else if (!this->teams->find(teamId)) {
-            return StatusType::FAILURE;
-        } else {
-            Team* newTeam = new Team(teamId);
-            this->teams->insert(teamId, newTeam); //insert(int id, T* value)
         }
-    }
-    catch (std::bad_alloc& e) {
+        Team* team = this->teams->find(teamId);
+        if (team != nullptr) { //if team already exists
+            return StatusType::FAILURE;
+        }
+
+        //if we got here, we need to create this team
+        team = new Team(teamId);
+
+        //every new team belongs initially to record 0
+        Record* zeroRecord = this->records->find(0);
+
+        if (zeroRecord == nullptr) {
+            zeroRecord = new Record(0);
+            this->records->insert(0, zeroRecord);
+        }
+
+        //insert team into corresponding record
+        zeroRecord->insert(teamId, team);
+
+        //store team in dynamic array
+        this->teams->insert(teamId, team);
+
+
+
+        return StatusType::SUCCESS;
+    } catch (std::bad_alloc& e) {
         return StatusType::ALLOCATION_ERROR;
     }
 }
 
 
-StatusType Plains::add_jockey(int jockeyId, int teamId)
+StatusType Plains::add_jockey(int jockeyId, int teamId) //todo verify
 {
     try{
         if(jockeyId<=0 || teamId <= 0) {
             return StatusType::INVALID_INPUT;
-        }else if (!this->teams->find(teamId) || this->teams->find(jockeyId)) { //if team doesnt exist or jockey does exist
-            return StatusType::FAILURE;
-        } else {
-            Jockey* newJockey = new Jockey(jockeyId,teamId);
-            this->jockeys->insert(teamId, newJockey); //insert(int id, T* value)
         }
-    }
-    catch (std::bad_alloc& e) {
+        Team* team = this->teams->find(teamId);
+        Jockey* jockey = this->jockeys->find(jockeyId);
+        if(team == nullptr || jockey != nullptr) {
+            return StatusType::FAILURE;
+        }
+        jockey = new Jockey(jockeyId,teamId);
+        this->jockeys->insert(jockeyId, jockey);
+
+
+
+        return StatusType::SUCCESS;
+    }catch (std::bad_alloc& e) {
         return StatusType::ALLOCATION_ERROR;
     }
 }
 
-StatusType Plains::update_match(int victoriousJockeyId, int losingJockeyId) //todo
+//todo create
+StatusType Plains::update_match(int victoriousJockeyId, int losingJockeyId) //todo verify
 {
     try{
+        //check input validity
         if(victoriousJockeyId<=0 || losingJockeyId <= 0||victoriousJockeyId == losingJockeyId) {
             return StatusType::INVALID_INPUT;
         }
-        Jockey* jockVic = this->jockeys->find(victoriousJockeyId);
-        Jockey* jockLos = this->jockeys->find(losingJockeyId);
-        if(jockVic==nullptr || jockLos==nullptr) {
+
+        //find corresponding jockeys
+        Jockey* winningJockey = this->jockeys->find(victoriousJockeyId);
+        Jockey* losingJockey = this->jockeys->find(losingJockeyId);
+
+        //if one of the jockeys does not exist in our system, invalid
+        if(winningJockey == nullptr || losingJockey == nullptr) {
             return StatusType::FAILURE;
         }
-        Team* teamVic = this->teams->getLeader(jockVic->getTeamId());
-        Team* teamLos = this->teams->getLeader(jockLos->getTeamId());
-        if(teamVic == teamLos) {
+
+        //retrieve initial group IDs
+        int initial_winning_group_id = winningJockey->getTeamId();
+        int initial_losing_group_id = losingJockey->getTeamId();
+
+        //retrieve actual groups
+        Team* winningTeam = this->teams->actuallGroupLeader(initial_winning_group_id);
+        Team* losingTeam = this->teams->actuallGroupLeader(initial_losing_group_id);
+
+        //as per da horaot
+        if(winningTeam == losingTeam) {
             return StatusType::FAILURE;
         }
-        int oldVicRec = teamVic->getRecord();
-        int oldLosRec = teamLos->getRecord();
-        jockVic->winMatch();
-        jockLos->loseMatch();
-        teamVic->winMatch();
-        teamLos->loseMatch();
-        Record* oldWin = this->records->find(oldVicRec);
-        Record* oldLos = this->records->find(oldLosRec);
-        if (oldWin != nullptr) {
-            oldWin->remove(teamVic->getId());
-            if (oldWin->isEmpty()) {
-                this->records->deleteItem(oldWin->get_records_val());
-            }
+
+        //this situation should not occur
+        assert(winningTeam != nullptr);
+        assert(losingTeam != nullptr);
+
+        //retrieve original records
+        Record* initial_winner_record = this->records->find(winningTeam->getRecord());
+        Record* initial_loser_record = this->records->find(losingTeam->getRecord());
+
+        //remove groups from records
+        initial_winner_record->remove(winningTeam->getId());
+        initial_loser_record->remove(losingTeam->getId());
+
+        //check maybe they are empty
+        if (initial_winner_record->isEmpty()) {
+            this->records->deleteItem(initial_winner_record->get_records_val());
         }
-        if (oldLos != nullptr) {
-            oldLos->remove(teamLos->getId());
-            if (oldLos->isEmpty()) {
-                this->records->deleteItem(oldLos->get_records_val());
-            }
+
+        //if initial_loser_record == initial_winner_record, avoid deleting twice
+        if ((initial_loser_record != initial_winner_record)&&(initial_loser_record->isEmpty())) {
+            this->records->deleteItem(initial_loser_record->get_records_val());
         }
-        int newVicRec = teamVic->getRecord();
-        int newLosRec = teamLos->getRecord();
-        assert(newVicRec==(oldVicRec+1));
-        assert(newLosRec==(oldLosRec-1));
-        Record* newWin = this->records->find(newVicRec);
-        Record* newLos = this->records->find(newLosRec);
-        if (newWin == nullptr) {
-            newWin = new Record(newVicRec);
-            this->records->insert(newVicRec, newWin);
+
+        //update game records for jockeys and teams
+        winningJockey->winMatch();
+        losingJockey->loseMatch();
+        winningTeam->winMatch();
+        losingTeam->loseMatch();
+
+        //get updated records
+        Record* winnerRecord = this->records->find(winningTeam->getRecord());
+        Record* loserRecord = this->records->find(losingTeam->getRecord());
+
+        //if records dont exist, create them and store them
+        if(winnerRecord == nullptr) {
+            winnerRecord = new Record(winningTeam->getRecord());
+            this->records->insert(winningTeam->getRecord(), winnerRecord);
         }
-        if (newLos == nullptr) {
-            newLos = new Record(newLosRec);
-            this->records->insert(newLosRec, newLos);
+
+        //same for loser record
+        if(loserRecord == nullptr) {
+            loserRecord = new Record(losingTeam->getRecord());
+            this->records->insert(loserRecord->get_records_val(),loserRecord);
         }
-        newWin->insert(teamVic->getId(),teamVic);
-        newLos->insert(teamLos->getId(),teamLos);
+
+        //store teams in their appropriate records
+        winnerRecord->insert(winningTeam->getId(),winningTeam);
+        loserRecord->insert(losingTeam->getId(),losingTeam);
+
+
+
+
+
+
+
         return StatusType::SUCCESS;
     }
     catch (std::bad_alloc& e) {
@@ -117,117 +179,115 @@ StatusType Plains::update_match(int victoriousJockeyId, int losingJockeyId) //to
     }
 }
 
-/*
-StatusType Plains::merge_teams(int teamId1, int teamId2){ //fixme
-    try{
-        if(teamId1<=0||teamId2<=0||teamId1==teamId2) {
-            return StatusType::INVALID_INPUT;
-        }
-        //Team* team1 = this->teams->find(teamId1);
-        //Team* team2 = this->teams->find(teamId2);
-        Team* leader1 = this->teams->find(teamId1); //if 'isActive()' is redundant then func should be
-        Team* leader2 = this->teams->find(teamId2); //findLeader() instead of find
-        if (leader1==nullptr || leader2==nullptr || leader1==leader2) {
-            return StatusType::FAILURE;
-        }
-        //todo add 'isActive()' check
-        if (!leader1->isActive() || !leader2->isActive()) {
-            return StatusType::FAILURE;
-        }
-        int initial_rec1 = leader1->getRecord();
-        int initial_rec2 = leader2->getRecord();
-        this->teams->uniteTeams(teamId1, teamId2);
-        Record* record = nullptr;
-        if (initial_rec1 > initial_rec2) {
-            record = this->records->find(initial_rec2);
-            record->remove(leader2->getId());
-        }
-        if (initial_rec1 < initial_rec2) {
-            record = this->records->find(initial_rec1);
-            record->remove(leader1->getId());
-        }
-        assert(initial_rec1!=initial_rec2);
-        if (record->isEmpty()) {
-            this->records->deleteItem(MIN(initial_rec1, initial_rec2));
-        }
 
-
-        return StatusType::SUCCESS;
-    }
-    catch(std::bad_alloc& e){
-        return StatusType::ALLOCATION_ERROR;
-    }
-}
-*/
-
-StatusType Plains::merge_teams(int teamId1, int teamId2){
-    try{
-        if(teamId1<=0||teamId2<=0||teamId1==teamId2) {
-            return StatusType::INVALID_INPUT;
-        }
-        //Team* team1 = this->teams->find(teamId1);
-        //Team* team2 = this->teams->find(teamId2);
-        Team* leader1 = this->teams->find(teamId1); //if 'isActive()' is redundant then func should be
-        Team* leader2 = this->teams->find(teamId2); //findLeader() instead of find
-        if (leader1==nullptr || leader2==nullptr || leader1==leader2) {
-            return StatusType::FAILURE;
-        }
-        //todo add 'isActive()' check
-        if (!leader1->isActive() || !leader2->isActive()) {
-            return StatusType::FAILURE;
-        }
-        int initial_rec1 = leader1->getRecord();
-        int initial_rec2 = leader2->getRecord();
-        this->teams->uniteTeams(teamId1, teamId2);
-        Record* record = nullptr;
-        if (initial_rec1 >= initial_rec2) {
-            record = this->records->find(initial_rec2);
-            record->remove(leader2->getId());
-        }
-        if (initial_rec1 < initial_rec2) {
-            record = this->records->find(initial_rec1);
-            record->remove(leader1->getId());
-        }
-        //assert(initial_rec1!=initial_rec2);
-        if (record->isEmpty()) {
-            this->records->deleteItem(MIN(initial_rec1, initial_rec2));
-        }
-
-
-        return StatusType::SUCCESS;
-    }
-    catch(std::bad_alloc& e){
-        return StatusType::ALLOCATION_ERROR;
-    }
-}
-
-StatusType Plains::unite_by_record(int record)
+StatusType Plains::merge_teams(int teamId1, int teamId2) //todo verify
 {
-    if (record<=0) {
-        return StatusType::INVALID_INPUT;
+    try{
+        if(teamId1<=0||teamId2<=0||teamId1==teamId2) {
+            return StatusType::INVALID_INPUT;
+        }
+        Team* team1 = this->teams->find(teamId1);
+        Team* team2 = this->teams->find(teamId2);
+        if(team1==nullptr || team2==nullptr) {
+            return StatusType::FAILURE;
+        }
+        if (!(team1->isActive()&&team2->isActive())) {
+            return StatusType::FAILURE;
+        }
+        int preRec1 = team1->getRecord();
+        int preRec2 = team2->getRecord();
+
+        Record* preRecord1 = this->records->find(preRec1);
+        Record* preRecord2 = this->records->find(preRec2);
+
+        assert(preRecord1!=nullptr && preRecord2!=nullptr); // i made sure a group is always in a record
+
+        preRecord1->remove(team1->getId()); //remove team1 from its record
+
+        if (preRecord1->isEmpty()) { //if record of team 1 is empty, delete it
+            this->records->deleteItem(preRec1);
+        }
+
+        preRecord2->remove(team2->getId()); //take team 2 out of its record
+
+        if (preRecord2->isEmpty()) { //if the record of team 2 is empty now, delete it.
+            this->records->deleteItem(preRec2);
+        }
+
+        int newRecordCombined = preRec1 + preRec2; //calc sum of 2 teams
+
+        this->teams->uniteTeams(teamId1, teamId2); //unite 2 teams
+
+        Record* newRecord = this->records->find(newRecordCombined); //find fitting record for the team union
+
+
+        if (newRecord == nullptr) { //if the new record doesnt exist, create and store it
+            newRecord = new Record(newRecordCombined);
+            this->records->insert(newRecordCombined, newRecord);
+        }
+
+
+        Team* leadTeam = this->teams->getLeader(teamId1); //get the leader after the union
+
+        newRecord->insert(leadTeam->getId(), leadTeam); //save the leader inside the new record
+
+
+
+
+
+
+        return StatusType::SUCCESS;
     }
-    int pos_rec = ABS(record);
-    Record* pos_record = this->records->find(pos_rec);
-    Record* neg_record = this->records->find(-pos_rec);
-    if (pos_record == nullptr || neg_record == nullptr) {
-        return StatusType::FAILURE;
+    catch(std::bad_alloc& e){
+        return StatusType::ALLOCATION_ERROR;
     }
-    if (!((pos_record->isSingleton())&&(neg_record->isSingleton()))) {
-        return StatusType::FAILURE;
-    }
-    Team* negative_team = neg_record->pop();
-    Team* positive_team = pos_record->pop();
-    int negative_id = negative_team->getId();
-    int positive_id = positive_team->getId();
-    neg_record->insert(negative_id, negative_team);
-    pos_record->insert(positive_id, positive_team);
-    /**
-     *basically i just made sure that there is just one team for +rec and for -rec,
-     *then i got the team to get its id, then put the teams back in their corresponding records
-     *so the rest of the code would work as expected, and then i just used the built in merge teams function.
-     */
-    return this->merge_teams(positive_id, negative_id);
 }
+
+
+StatusType Plains::unite_by_record(int record) //todo verify
+{
+    try{
+        if (record<=0) {
+            return StatusType::INVALID_INPUT;
+        }
+
+        //get corresponding records
+        Record* positive = this->records->find(record);
+        Record* negative = this->records->find(-record);
+
+        //check if the records exist
+        if (positive==nullptr || negative==nullptr) {
+            return StatusType::FAILURE;
+        }
+
+        //if we are not in an {each record == exactly one} situation, cannot unite by record.
+        if (!(positive->isSingleton() && negative->isSingleton())) {
+            return StatusType::FAILURE;
+        }
+
+        //retrieve teams
+        Team* positive_team = positive->pop();
+        Team* negative_team = negative->pop();
+
+        //retrieve ID's
+        int positive_team_id = positive_team->getId();
+        int negative_team_id = negative_team->getId();
+
+        //return state to controlled state - every team belongs to a record
+        positive->insert(positive_team_id, positive_team);
+        negative->insert(negative_team_id, negative_team);
+
+
+        //utilise existing function to take care of union
+        return this->merge_teams(positive_team_id, negative_team_id);
+    }
+    catch(std::bad_alloc& e){
+        return StatusType::ALLOCATION_ERROR;
+    }
+
+
+}
+
 
 output_t<int> Plains::get_jockey_record(int jockeyId)
 {
@@ -241,19 +301,15 @@ output_t<int> Plains::get_jockey_record(int jockeyId)
     return jock->getRecord();
 }
 
+
 output_t<int> Plains::get_team_record(int teamId)
 {
     if (teamId<=0) {
         return StatusType::INVALID_INPUT;
     }
     Team* team = this->teams->find(teamId);
-    if (team==nullptr) {
+    if (team==nullptr || !(team->isActive())) {
         return StatusType::FAILURE;
     }
-    Team* team_leader = this->teams->getLeader(teamId);
-    if (team!=team_leader) { //if the team does not lead itself it means that it has been deleted
-        return StatusType::FAILURE;
-    }
-    assert(team_leader!=nullptr); //just make sure that there isnt some problem
     return team->getRecord();
 }

@@ -64,6 +64,12 @@ public:
         return true;
     }
 
+    T* getGroupLeader() {
+        UnionFindNode* groupLead = this->getGroup();
+        return groupLead->getData();
+    } //todo
+
+
 
 
 

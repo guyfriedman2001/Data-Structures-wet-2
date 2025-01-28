@@ -86,6 +86,11 @@ public:
         delete result;
     }
 
+    T* getGroupLeader(int id) {
+        UnionFindNode<T>* groupOne = this->findNode(id);
+        return groupOne->getGroupLeader();
+    }
+
 
 
 

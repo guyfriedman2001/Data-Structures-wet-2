@@ -99,7 +99,7 @@ public:
 
 
 
-    Team* getLeader(int team_id) {
+    Team* getLeader(int team_id) { //fixme
         Team* root_team = this->find(team_id);
         if (root_team == nullptr) {
             return nullptr;
@@ -110,6 +110,12 @@ public:
             throw "some problem in TeamUnionFind::getLeader()";
             return nullptr;
         }
+        return record_holder;
+    }
+
+    Team* actuallGroupLeader(int id) {
+        Team* root_team = this->getGroupLeader(id);
+        Team* record_holder = this->find(root_team->getLeaderID());
         return record_holder;
     }
 
