@@ -24,7 +24,7 @@ Plains::Plains()
 
 Plains::~Plains()
 {
-    delete records; //fixme this destructor also deletes teams for some reason
+    delete records;
     delete teams;
     delete jockeys;
 }

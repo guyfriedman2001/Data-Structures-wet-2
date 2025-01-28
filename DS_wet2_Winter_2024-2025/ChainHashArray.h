@@ -94,9 +94,11 @@ public:
     }
 
     void clear() {
-        for (int i = 0; i < this->amount_of_items; i++) {
+        int items_amount = this->amount_of_items;
+        for (int i = 0; i < items_amount; i++) {
             this->popRandom();
         }
+        assert(this->amount_of_items == EMPTY);
         this->checkUpdateArr();
     }
 
