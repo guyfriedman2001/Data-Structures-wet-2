@@ -116,6 +116,9 @@ public:
         this->size = new_size;
     }
 
+    bool check_active_immediate(int idVerify) {
+        return ((this->id == idVerify) && (this->check_active_immediate()));
+    }
     bool check_active_immediate() {
         return this->root_by_mass == this || this->root_by_mass->id == this->id;
     }

@@ -94,7 +94,7 @@ public:
         if (temp_placeholder == nullptr) {
             return false;
         }
-        return temp_placeholder->check_active_immediate();
+        return temp_placeholder->check_active_immediate(team_id);
     }
 
 };

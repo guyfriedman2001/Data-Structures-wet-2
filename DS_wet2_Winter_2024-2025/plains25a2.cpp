@@ -27,6 +27,7 @@ Plains::~Plains()
     delete records;
     delete teams;
     delete jockeys;
+    //delete records;
 }
 
 StatusType Plains::add_team(int teamId)
@@ -84,6 +85,8 @@ StatusType Plains::add_jockey(int jockeyId, int teamId)
 
         //store jockey in our system
         this->jockeys->insert(jockeyId,jockey);
+
+        //todo increment size of team by 1
 
         return StatusType::SUCCESS;
     } catch (std::bad_alloc& e) {
