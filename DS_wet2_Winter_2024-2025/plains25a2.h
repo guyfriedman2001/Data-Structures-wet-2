@@ -18,7 +18,9 @@
 #include <new>
 
 #include "Jockey.h"
+#include "NewTeamArr.h"
 #include "Record.h"
+#include "RecordArr.h"
 #include "TeamUnionFind.h"
 
 class Plains {
@@ -26,8 +28,8 @@ private:
     //
     // Here you may add anything you want
     //
-    ChainHashArray<Record>* records;
-    TeamUnionFind* teams;
+    RecordArr* records;
+    NewTeamArr* teams;
     ChainHashArray<Jockey>* jockeys;
     
 public:

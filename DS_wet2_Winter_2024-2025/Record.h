@@ -6,8 +6,10 @@
 #ifndef RECORD_H
 #define RECORD_H
 #include "ChainHashArray.h"
+#include "NewTeam.h"
 #include "Team.h"
-typedef Team what_to_hold;
+
+typedef NewTeam what_to_hold;
 
 class Record {
 protected:
@@ -47,6 +49,14 @@ public:
 
     int get_records_val() {
         return this->record_value;
+    }
+
+    int get_singleton_team_id() {
+        //todo - pop only team (assert this is singleton), save team id, re insert team with team id, return team id
+
+        assert(this->isSingleton());
+
+        //fixme
     }
 
 
