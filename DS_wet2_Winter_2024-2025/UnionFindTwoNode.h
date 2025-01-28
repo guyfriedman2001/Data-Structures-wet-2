@@ -69,6 +69,10 @@ public:
         return groupLead->getData();
     } //todo
 
+    UnionFindNode* grouLeaderNode() {
+        return this->getGroup();
+    }
+
 
 
 

@@ -88,7 +88,8 @@ public:
 
     T* getGroupLeader(int id) {
         UnionFindNode<T>* groupOne = this->findNode(id);
-        return groupOne->getGroupLeader();
+        UnionFindNode<T>* groupTwo = groupOne->grouLeaderNode();
+        return groupTwo->getGroupLeader();
     }
 
 

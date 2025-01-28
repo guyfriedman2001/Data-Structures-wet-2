@@ -73,8 +73,8 @@ public:
         Team* root_team2 = this->find(id2);
         int record_leader1_id = root_team1->getLeaderID();
         int record_leader2_id = root_team2->getLeaderID();
-        Team* record_leader1 = this->find(record_leader1_id);
-        Team* record_leader2 = this->find(record_leader2_id);
+        Team* record_leader1 = this->actuallGroupLeader(record_leader1_id); //fixme changed from find to actuallGroupLeader
+        Team* record_leader2 = this->actuallGroupLeader(record_leader2_id); //fixme same
         int record1 = record_leader1->getRecord();
         int record2 = record_leader2->getRecord();
         int records_sum = record1 + record2;
@@ -119,6 +119,9 @@ public:
         return record_holder;
     }
 
+    int testActuallGroupUnionGetID(int teamToFindLeaderOf) {
+        return 0;
+    }
 
 
 

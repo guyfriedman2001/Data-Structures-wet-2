@@ -113,7 +113,7 @@ StatusType Plains::update_match(int victoriousJockeyId, int losingJockeyId) //to
         Team* winningTeam = this->teams->actuallGroupLeader(initial_winning_group_id);
         Team* losingTeam = this->teams->actuallGroupLeader(initial_losing_group_id);
 
-        //as per da horaot
+        //as per da fooken horaot
         if(winningTeam == losingTeam) {
             return StatusType::FAILURE;
         }
