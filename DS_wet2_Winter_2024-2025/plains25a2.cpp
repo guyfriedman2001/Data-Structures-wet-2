@@ -24,10 +24,9 @@ Plains::Plains()
 
 Plains::~Plains()
 {
-    delete records;
+    delete records; //fixme this destructor also deletes teams for some reason
     delete teams;
     delete jockeys;
-    //delete records;
 }
 
 StatusType Plains::add_team(int teamId)
