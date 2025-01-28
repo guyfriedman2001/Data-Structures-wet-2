@@ -89,7 +89,7 @@ public:
             }
         }
         //fixme no check for this->checkUpdateArr();
-        throw std::out_of_range("No items in the chain hash array"); //fixme remove for mivnei
+        //throw std::out_of_range("No items in the chain hash array"); //fixme remove for mivnei
         return nullptr; //if we got here then there is a problem
     }
 

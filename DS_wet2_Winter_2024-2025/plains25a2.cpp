@@ -45,6 +45,9 @@ StatusType Plains::add_team(int teamId)
         //after we checked that there is no and was no team for 'teamId', create it.
         newTeam = new NewTeam(teamId);
 
+        //put team in teams
+        this->teams->insert(teamId, newTeam);
+
         //the record for every beginner team
         int initial_record = 0;
 
@@ -251,7 +254,7 @@ output_t<int> Plains::get_team_record(int teamId)
         }
 
         //make sure team is active without path modifications
-        if (!this->teams->check_active_immediate(teamId)) {
+        if (!this->teams->team_active(teamId)) { //check_active_immediate
             return StatusType::FAILURE;
         }
 

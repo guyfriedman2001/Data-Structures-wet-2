@@ -29,7 +29,10 @@ public:
     }
     */
 
-    ~NewTeam() = default;
+    ~NewTeam() {
+        this->root_by_mass == nullptr;
+        this->root_by_record == nullptr;
+    }
 
     NewTeam* get_root_by_mass() {
         if (this->root_by_mass == this) {
